@@ -1,0 +1,127 @@
+from PIL import Image
+import random
+
+# ==============================
+# 🔐 METHOD 1: Pixel Value Encryption
+# ==============================
+
+def encrypt_math(input_path, output_path, key):
+    img = Image.open(input_path)
+    pixels = img.load()
+
+    width, height = img.size
+
+    for i in range(width):
+        for j in range(height):
+            r, g, b = pixels[i, j]
+
+            r = (r + key) % 256
+            g = (g + key) % 256
+            b = (b + key) % 256
+
+            pixels[i, j] = (r, g, b)
+
+    img.save(output_path)
+    print("✅ Math Encryption Done!")
+
+
+def decrypt_math(input_path, output_path, key):
+    img = Image.open(input_path)
+    pixels = img.load()
+
+    width, height = img.size
+
+    for i in range(width):
+        for j in range(height):
+            r, g, b = pixels[i, j]
+
+            r = (r - key) % 256
+            g = (g - key) % 256
+            b = (b - key) % 256
+
+            pixels[i, j] = (r, g, b)
+
+    img.save(output_path)
+    print("✅ Math Decryption Done!")
+
+
+# ==============================
+# 🔄 METHOD 2: Pixel Swapping
+# ==============================
+
+def encrypt_swap(input_path, output_path, seed):
+    img = Image.open(input_path)
+    pixels = list(img.getdata())
+
+    random.seed(seed)
+    random.shuffle(pixels)
+
+    img.putdata(pixels)
+    img.save(output_path)
+
+    print("✅ Swap Encryption Done!")
+
+
+def decrypt_swap(input_path, output_path, seed):
+    img = Image.open(input_path)
+    pixels = list(img.getdata())
+
+    n = len(pixels)
+    indices = list(range(n))
+
+    random.seed(seed)
+    random.shuffle(indices)
+
+    # Reverse shuffle
+    original = [None] * n
+    for i, j in enumerate(indices):
+        original[j] = pixels[i]
+
+    img.putdata(original)
+    img.save(output_path)
+
+    print("✅ Swap Decryption Done!")
+
+
+# ==============================
+# 🖥️ MAIN MENU
+# ==============================
+
+def main():
+    print("\n=== Image Encryption Tool ===")
+    print("1. Encrypt (Math Method)")
+    print("2. Decrypt (Math Method)")
+    print("3. Encrypt (Swap Method)")
+    print("4. Decrypt (Swap Method)")
+
+    choice = input("Enter your choice (1-4): ")
+
+    input_path = input("Enter input image path: ")
+    output_path = input("Enter output image path: ")
+
+    if choice == "1":
+        key = int(input("Enter key (number): "))
+        encrypt_math(input_path, output_path, key)
+
+    elif choice == "2":
+        key = int(input("Enter key (same as encryption): "))
+        decrypt_math(input_path, output_path, key)
+
+    elif choice == "3":
+        seed = int(input("Enter seed (number): "))
+        encrypt_swap(input_path, output_path, seed)
+
+    elif choice == "4":
+        seed = int(input("Enter seed (same as encryption): "))
+        decrypt_swap(input_path, output_path, seed)
+
+    else:
+        print("❌ Invalid choice")
+
+
+# ==============================
+# ▶️ RUN PROGRAM
+# ==============================
+
+if __name__ == "__main__":
+    main()
